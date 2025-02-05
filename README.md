@@ -134,7 +134,9 @@ With the definitions:
 
 During the training an amount of data observations (given by the batch-size number) are passed through the network and the output is then after the batch compared to the true expected outputs (ground truths) with a so called loss-function or error-function.<br>
 Then the network is backpropagated and the weights are adjusted to minimize the loss. This is done by calculating the negated gradient of the loss-function with the given weight and change the loss in this direction a little bit (learning rate regulates the great of the adjustment in this direction) -> in other words we find out in which direction the minimum (local or global) of the loss-function is and change the weight to go in this direction.<br>
-This background knowledge explains why the choice of the loss-function is important and that the learning-rate should not be choosen too high or too low, else the adjustments are too big or too small in the "right" direction.
+This background knowledge explains why the choice of the loss-function is important and that the learning-rate should not be choosen too high or too low, else the adjustments are too big or too small in the "right" direction.<br>
+The detail strategy to update the weights during the backpropagation using the gradient decides the so called 'optimizer'. There are for example RMSProp, ADAM and much more optimizer.<br>
+All data observations/batches are called one epoch. A training consists of multiple epochs (complete dataset throughpasses).
 
 
 
@@ -190,45 +192,73 @@ In theory you also can install anaconda on a could workstation using commands an
 To **check your hardware** type following in your python cell:
 
 ```python
-# !pip install psutil    # or: conda install psutil
-# !pip install gputil    # or: conda install gputil
+def get_hardware_info(use_in_notebook=True, install_packages=True):
+    import platform
+    system_name = platform.system()
+    
+    if install_packages:
+        if system_name.lower() == "windows":
+            %pip install psutil    # or: conda install psutil
+            %pip install gputil
+            %pip install py-cpuinfo
+        elif system_name.lower() == "linux":
+            !pip install psutil    # or: conda install psutil
+            !pip install gputil
+            !pip install py-cpuinfo
 
-import psutil
-import GPUtil
-import platform
+    # import needed packages
+    import psutil
+    import GPUtil
+    from cpuinfo import get_cpu_info
 
-def get_hardware_info():
+    if use_in_notebook:
+        if install_packages:
+            if system_name.lower() == "windows":
+                %pip install ipython
+            elif system_name.lower() == "linux":
+                !pip install ipython
+
+        from IPython.display import clear_output
+        clear_output()
+
     print("-"*32, "\nYour Hardware:\n")
 
     # General
-    print("---> General <---")
-    print("Betriebssystem:", platform.system())
+    print("    ---> General <---")
+    print("Operatingsystem:", platform.system())
     print("Version:", platform.version())
-    print("Architektur:", platform.architecture())
-    print("Prozessor:", platform.processor())
+    print("Architecture:", platform.architecture())
+    print("Processor:", platform.processor())
 
     # GPU-Information
-    print("---> GPU <---")
+    print("\n    ---> GPU <---")
     gpus = GPUtil.getGPUs()
     for gpu in gpus:
         print("GPU Name:", gpu.name)
-        print("VRAM Gesamt:", gpu.memoryTotal, "MB")
-        print("VRAM Nutzung:", gpu.memoryUsed, "MB")
-        print("Auslastung:", gpu.load * 100, "%")
+        print("VRAM Total:", gpu.memoryTotal, "MB")
+        print("VRAM Used:", gpu.memoryUsed, "MB")
+        print("Utilization:", gpu.load * 100, "%")
 
     # CPU-Information
-    print("---> CPU <---")
-    print("CPU Kerne:", psutil.cpu_count(logical=False))
-    print("Logische CPU-Kerne:", psutil.cpu_count(logical=True))
-    print("CPU-Frequenz:", psutil.cpu_freq().max, "MHz")
-    print("CPU-Auslastung:", psutil.cpu_percent(interval=1), "%")
+    print("\n    ---> CPU <---")
+    cpu_info = get_cpu_info()
+    print("CPU-Name:", cpu_info["brand_raw"])
+    print("CPU Kernels:", psutil.cpu_count(logical=False))
+    print("Logical CPU-Kernels:", psutil.cpu_count(logical=True))
+    print("CPU-Frequence:", psutil.cpu_freq().max, "MHz")
+    print("CPU-Utilization:", psutil.cpu_percent(interval=1), "%")
 
     # RAM-Information
-    print("---> RAM <---")
+    print("\n    ---> RAM <---")
     ram = psutil.virtual_memory()
-    print("Gesamter RAM:", ram.total // (1024**3), "GB")
-    print("Freier RAM:", ram.available // (1024**3), "GB")
-    print("RAM-Auslastung:", ram.percent, "%")
+    print("RAM Total:", ram.total // (1024**3), "GB")
+    print("RAM Available:", ram.available // (1024**3), "GB")
+    print("RAM-Utilization:", ram.percent, "%")
+
+    print(f"\n{'-'*32}")
+
+
+get_hardware_info(use_in_notebook=True, install_packages=True)
 ```
 
 Here are some alternatives...but there are more!
