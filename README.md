@@ -8,8 +8,10 @@ Contents:
 - [Generative Deep Learning](#generative-deep-learning)
     - [Basics of Generative Models](#basics-of-generative-models)
     - [Basics of Deep Learning](#basics-of-deep-learning)
+    - [Variational Autoencoder (VAE)](#variational-autoencoder-vae)
     - [Installation](#installation)
     - [Hardware Check](#hardware-check)
+    - [Code](#code)
 
 
 
@@ -137,6 +139,20 @@ Then the network is backpropagated and the weights are adjusted to minimize the 
 This background knowledge explains why the choice of the loss-function is important and that the learning-rate should not be choosen too high or too low, else the adjustments are too big or too small in the "right" direction.<br>
 The detail strategy to update the weights during the backpropagation using the gradient decides the so called 'optimizer'. There are for example RMSProp, ADAM and much more optimizer.<br>
 All data observations/batches are called one epoch. A training consists of multiple epochs (complete dataset throughpasses).
+
+
+
+
+
+
+---
+### Variational Autoencoder (VAE)
+
+Variational Autoencoders are one of the most basic generative models, introduced in the year 2013. It approximate the true density function and so build it explicitly.<br>
+The Autoencoder (simpler version of the VAE) learns to encode the input (for example an image) into a low representation -> it learns to transform the input data to the latent space/embedding space. The decoder learns to decode/reconstruct an item/data (also called embedding -> because there is as much information as possible embedded) from the latent space (a lower dimensional representation) into the original domain/dimension.<br>
+It simply can work as generator by decoding/recreating another/novel item/data point in the latent space.<br>
+Problem with the standard autoencoder is the sampling from the latent space. It is not simple to draw/sample from the latent space randomly, due to the fact that the latent space might be different distributed with the different input classes (for example maybe there were many shoes in the training and the latent space defines now shoes for 50% of the defined latent space, sampling would now be not really random and often result in shoes). VAE improves the sampling.<br>
+... 
 
 
 
@@ -272,6 +288,22 @@ import subprocess
 subprocess.run(["nvcc", "--version"])
 ```
 
+
+
+
+
+
+---
+### Code
+
+
+**TensorFlow Basics**
+- [MLP with CIFAR10 dataset](./src/01_tensorflow_basics/MLP_CIFAR10.ipynb)
+- [CNN with CIFAR10 dataset](./src/01_tensorflow_basics/CNN_CIFAR10.ipynb)
+
+
+**Variational Autoencoder**
+- []()
 
 
 
