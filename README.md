@@ -170,7 +170,25 @@ $$
 This is given through the derivation of the normal distribution. This is called 'reparameterization trick' and allows us to simply sample from a standard normal distribution and then apply this sample to the latent space normal distribution. <br>
 The VAE also uses an additional loss (to the reconstruction loss from standard autoencoder), the Kullback-Leibler divergence term, to make sure that the learned distribution for the input item is similiar to the standard normal distribution. Else the reparameterization trick would not be possible. So the encoder learns over time to create similiar distributions to the standard normal distribution. Therefore the KL divergence measures the similarity of 2 probability distributions. The KL divergence loss gets additionally weighted with a hyperparameter, so that the balance between the 2 losses can be controlled.<br>
 Why this helps with the sampling? The encoder now ensures that nearby items in the latent-space are really similear through the encoding into an distibution. Also this is now a continues space without completly empty areas as in the standard autencoder (this is mostlikely given through the additional loss).<br>
-The encoder from VAE learns to building similiar normal distributions for similiar inputs. The decoder learns to reconstruct the original input from a sample drawn from the learned distribution.
+The encoder from VAE learns to building similiar normal distributions for similiar inputs. You can imagine that it builds clusters/clouds on a point (the mean) and how big and how the propably to find the learned feature is for the given image is given by the variance.
+
+$$
+\mu = (\mu_1, \mu_2, ..., \mu_d), \; \sigma^2 = (\sigma^2_1, \sigma^2_2, ..., \sigma^2_d)
+$$
+
+At the end we need real values, for that we have to sample from the learned distribution. 
+
+$$
+z \sim \mathcal{N(\mu, \sigma^2)}
+$$
+
+The problem here is that this equation haven't a derivation due to the randomness (which is need to compute the gradient).<br>
+So we use the reparametrization trick to sample from the founded distribution, so that we get a number from the learned input distribution. This is important because the trick allows us to build the derivation of the function which is important to calculate the gradient in backpropagation. The trick just takes the standard normal distribution and transform the output to the learned/latent-space distribution.
+$$
+z = \mu + e^{0.5 \cdot \log(var)}*\epsilon, \quad \epsilon \sim \mathcal{N(0, 1)} 
+$$
+
+The decoder learns to reconstruct the original input from a sample drawn from the learned distribution. The decoder does not "know" that the values come from whatever distribution, just like before it gets straigth (not probabilistic) values.
 
 
 
