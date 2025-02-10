@@ -154,7 +154,20 @@ It simply can work as generator by decoding/recreating another/novel item/data p
 Problem with the standard autoencoder is the sampling from the latent space. It is not simple to draw/sample from the latent space randomly, due to the fact that the latent space might be different distributed with the different input classes (for example maybe there were many shoes in the training and the latent space defines now shoes for 50% of the defined latent space, sampling would now be not really random and often result in shoes). Another problem are gaps. It is not given that the whole latent-space (limited through the train-data embedding mins and maxs) is filled without gaps. It is good possible that the learned embedding is in a way that there are areas without any known data in the near by, which could result in a bad sampling or again in a unbalanced distribution (often sample a similiar item). VAE improves the sampling.<br>
 For that the variational autoencoder changes the encoding from 1 input to one exact point in the lower space, to 1 input to one point in a gaussian/normal distribution (multivariate, to handle multiple dimension latent spaces).<br>
 The VAE encodes the input now into a mean and a variance of each dimension (for better calculations with NN, we use the logarithm of the variance of each dimension).<br>
-Sampling happens now through the mean value (of the latent space) + $\exp{log_var*0.5}$ (where log_var is the log of variance in the latent space variantion)* a random sampling/number from a standard normal distribution. This is given through the derivation of the normal distribution. This is called 'reparameterization trick' and allows us to simply sample from a standard normal distribution and then apply this sample to the latent space normal distribution. <br>
+Sampling happens now through the mean value (of the latent space) + $\exp{log_var*0.5}$ (where log_var is the log of variance in the latent space variantion) multiplied with a random sampling/number from a standard normal distribution: 
+$$
+mean + e^{(\log(var) * 0.5)} * \epsilon \sim \mathcal{N}(0,1)
+
+\\[10pt]
+
+\begin{array}{l}
+    \bullet \: \text{where } X \text{ is a random variable.} \\
+    \bullet \: \text{where } mean \text{ is the mean point of the distribution.} \\
+    \bullet \: \text{where } var \text{ is the variance of the distribution points.}\\
+\end{array}
+$$
+
+This is given through the derivation of the normal distribution. This is called 'reparameterization trick' and allows us to simply sample from a standard normal distribution and then apply this sample to the latent space normal distribution. <br>
 The VAE also uses an additional loss (to the reconstruction loss from standard autoencoder), the Kullback-Leibler divergence term, to make sure that the learned distribution for the input item is similiar to the standard normal distribution. Else the reparameterization trick would not be possible. So the encoder learns over time to create similiar distributions to the standard normal distribution. Therefore the KL divergence measures the similarity of 2 probability distributions. The KL divergence loss gets additionally weighted with a hyperparameter, so that the balance between the 2 losses can be controlled.<br>
 Why this helps with the sampling? The encoder now ensures that nearby items in the latent-space are really similear through the encoding into an distibution. Also this is now a continues space without completly empty areas as in the standard autencoder (this is mostlikely given through the additional loss).<br>
 The encoder from VAE learns to building similiar normal distributions for similiar inputs. The decoder learns to reconstruct the original input from a sample drawn from the learned distribution.
