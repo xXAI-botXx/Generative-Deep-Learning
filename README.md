@@ -9,6 +9,7 @@ Contents:
     - [Basics of Generative Models](#basics-of-generative-models)
     - [Basics of Deep Learning](#basics-of-deep-learning)
     - [Variational Autoencoder (VAE)](#variational-autoencoder-vae)
+    - [Generative Adversarial Networks (GANs)](#generative-adversarial-networks-gans)
     - [Installation](#installation)
     - [Hardware Check](#hardware-check)
     - [Code](#code)
@@ -190,6 +191,19 @@ $$
 
 The decoder learns to reconstruct the original input from a sample drawn from the learned distribution. The decoder does not "know" that the values come from whatever distribution, just like before it gets straigth (not probabilistic) values.
 
+
+
+
+
+
+---
+### Generative Adversarial Networks (GANs)
+
+The idea behind GANs is simple. One part generates data from noise and the other part tries to tell, if the data is from the generator or from the real/original data distribution, called the discriminator. Both try now to improve. The generator tries to generator images, so that the discriminator does think it is from the real data and so uses the feedback of the discriminator. This is the reason why GANs only implicit learn the density function. There is no direct representation of the data/density function. It just tries to get not spotted from the discriminator and so learn the data distribution implicitly, without even knowing or seeing it. <br>
+In comparison the VAE directly used the data distribution to learned an encoding and a decoding to build an explicit approximate probability distribution. A GAN only learnes a density function implicitly.<br>
+Back to the GAN: The improvement of the discriminator is also straightforward due to the fact, that we know if we gave him a fake (from the generator) or a real data from the data. So the discriminator learnes to classify if data is from the original data or not -> it will predict in percentage (how likely is the data from the original data). <br>
+It is a continuing process of improving. At the beginning the generator will only generates random noise and the discriminator will decide randomly but may adjust and learn that noisy images come from the generator, and so the generator get bad results and gets pushed to improve/change the generation process until it successfull fool the discriminator most of the times and so the discriminator adjust and this game continues.<br>
+The first GAN is the DCGAN => Deep Convolutional GAN.
 
 
 
