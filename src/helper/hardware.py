@@ -11,34 +11,36 @@ Use me:
 Or copy my code to colab 🥳🚀
 """
 
+
+
 def get_hardware_info(use_in_notebook=True, install_packages=True):
-    import platform
-    system_name = platform.system()
+    import sys
+    import subprocess
+    import importlib.util
     
     if install_packages:
-        if system_name.lower() == "windows":
-            %pip install psutil    # or: conda install psutil
-            %pip install gputil
-            %pip install py-cpuinfo
-        elif system_name.lower() == "linux":
-            !pip install psutil    # or: conda install psutil
-            !pip install gputil
-            !pip install py-cpuinfo
+        if importlib.util.find_spec("psutil") is None:
+            subprocess.run([sys.executable, "-m", "pip", "install", "psutil"], check=True)
+        if importlib.util.find_spec("gputil") is None:
+            subprocess.run([sys.executable, "-m", "pip", "install", "gputil"], check=True)
+        if importlib.util.find_spec("py-cpuinfo") is None:
+            subprocess.run([sys.executable, "-m", "pip", "install", "py-cpuinfo"], check=True)
 
     # import needed packages
+    import platform
     import psutil
     import GPUtil
     from cpuinfo import get_cpu_info
 
     if use_in_notebook:
-        if install_packages:
-            if system_name.lower() == "windows":
-                %pip install ipython
-            elif system_name.lower() == "linux":
-                !pip install ipython
+        if install_packages and importlib.util.find_spec("ipython") is None:
+            subprocess.run([sys.executable, "-m", "pip", "install", "ipython"], check=True)
 
         from IPython.display import clear_output
         clear_output()
+    else:
+        pass
+        # os.system('cls' if os.name == 'nt' else 'clear')
 
     print("-"*32, "\nYour Hardware:\n")
 

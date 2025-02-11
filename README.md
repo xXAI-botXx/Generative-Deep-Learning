@@ -203,7 +203,8 @@ The idea behind GANs is simple. One part generates data from noise and the other
 In comparison the VAE directly used the data distribution to learned an encoding and a decoding to build an explicit approximate probability distribution. A GAN only learnes a density function implicitly.<br>
 Back to the GAN: The improvement of the discriminator is also straightforward due to the fact, that we know if we gave him a fake (from the generator) or a real data from the data. So the discriminator learnes to classify if data is from the original data or not -> it will predict in percentage (how likely is the data from the original data). <br>
 It is a continuing process of improving. At the beginning the generator will only generates random noise and the discriminator will decide randomly but may adjust and learn that noisy images come from the generator, and so the generator get bad results and gets pushed to improve/change the generation process until it successfull fool the discriminator most of the times and so the discriminator adjust and this game continues.<br>
-The first GAN is the DCGAN => Deep Convolutional GAN.
+The first GAN is the DCGAN => Deep Convolutional GAN. <br>
+Interestingly the generator does the same as the decoder from VAE. It learns to decode from a latent space. In the case of the GAN, we have a latent space and draw randomly from it. We does not learn to build the latent space, which shows again that the GAN is an implicit approach. 
 
 
 

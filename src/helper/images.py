@@ -3,9 +3,9 @@
 import cv2
 
 
-def imshow(img, title=None, image_width=10, axis=False, 
+def imshow(img, title=None, image_width=10, axis=False,
            color_space="RGB", cols=1, use_original_sytle=False,
-           hspace=0.2, wspace=0.2):
+           hspace=0.2, wspace=0.2, invert=False):
     """
     Visualizes one or multiple images.
 
@@ -35,6 +35,13 @@ def imshow(img, title=None, image_width=10, axis=False,
         raise ValueError(f"Image(s) have wrong shape! Founded shape: {img.shape}.")
 
     print(f"Transformed shape to: {img_shape}")
+
+    # invert images
+    if invert:
+        print("Invert images...")
+        max_value = 2**(img.dtype.itemsize * 8) -1
+        scaling_func = lambda x: max_value - x
+        img = np.apply_along_axis(scaling_func, axis=0, arr=img)
 
     # Set visualization settings
     # aspect_ratio_width = img.shape[1] / img.shape[2]
@@ -68,7 +75,7 @@ def imshow(img, title=None, image_width=10, axis=False,
             continue
 
         cur_img = img[idx]
-        
+
         if color_space.lower() == "bgr":
             cur_img = cv2.cvtColor(cur_img, cv2.COLOR_BGR2RGB)
             cmap = None
@@ -81,7 +88,7 @@ def imshow(img, title=None, image_width=10, axis=False,
         elif color_space.lower() in ["gray", "grey", "g"]:
             cur_img = cur_img
             cmap = "gray"
-        
+
         cur_ax.imshow(cur_img, cmap=cmap)
 
         if type(title) in [list, tuple]:
@@ -95,6 +102,73 @@ def imshow(img, title=None, image_width=10, axis=False,
         # reset to original plt style
         plt.rcParams.update(original_style)
 
+
+
+def get_used_depth(img:np.ndarray):
+    """
+    Find the number of possible/used pixel values in an image.
+
+    Only works if the pixel space is really used! 
+    """
+    max_value = img.max()
+    if max_value - 1 <= 0:
+        return 1
+    elif max_value - 2**8-1 <= 0:
+        return 8
+    elif max_value - 2**16-1 <= 0:
+        return 16
+    elif max_value - 2**32-1 <= 0:
+        return 32
+    else:
+        raise ValueError("The depth of the given image is not sure:", max_value)
+
+
+
+def get_depth(img:np.ndarray):
+    """
+    Returns the depth of an image in bit.
+    """
+    return img.dtype.itemsize * 8
+
+
+
+def change_bit_depth_with_scaling(image, new_bit_depth=None):
+    old_dtype = image.dtype
+    int_types = {8: np.uint8, 16: np.uint16, 32: np.uint32, 64: np.uint64}
+    float_types = {16: np.float16, 32: np.float32, 64: np.float64}
+
+    # old depth pixel space
+    old_bit_depth = old_dtype.itemsize * 8
+    old_min, old_max = (0, 2**old_bit_depth - 1) if np.issubdtype(old_dtype, np.integer) else (0.0, 1.0)
+    print(f"Old bit depth: {old_bit_depth} bit")
+
+    # new datatype
+    if new_bit_depth is None:
+        new_bit_depth = get_used_depth(image)
+        print(f"Found a used depth space of {new_bit_depth} bit")
+
+    if np.issubdtype(old_dtype, np.integer):
+        new_dtype = int_types.get(new_bit_depth, None)
+        new_min, new_max = 0, 2**new_bit_depth - 1
+    elif np.issubdtype(old_dtype, np.floating):
+        new_dtype = float_types.get(new_bit_depth, None)
+        new_min, new_max = 0.0, 1.0
+    else:
+        raise ValueError("Unsupported dtype")
+
+    if new_dtype is None:
+        raise ValueError(f"Unsupported bit depth: {new_bit_depth}")
+
+    # scaling and applying
+    if new_dtype == old_dtype:
+        print("No datatyp change done! But dat got scaled")
+    else:
+        print(f"Change and scaled from {old_dtype} ({old_bit_depth} bit) -> {new_dtype} ({new_bit_depth} bit)")
+        
+    norm_array = (image.astype(np.float32) - old_min) / (old_max - old_min)
+    scaled_array = norm_array * (new_max - new_min) + new_min
+
+    return scaled_array.astype(new_dtype)
 
 
 
