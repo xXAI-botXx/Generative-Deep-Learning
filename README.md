@@ -239,7 +239,7 @@ Trial and error is the way. The knowledge of how a GAN works and how to interpre
 The Wasserstein GAN - Gradient Penalty is another GAN implementation which is more stable as the DCGAN. It uses the Wasserstein loss function, which does not output in probability but in a score $(-\inf, \inf)$. The before used binary cross-entropy loss can be written as folowing:
 
 $$
-\underset{\text{D}}{min} -(\; \log(D(x))\; +\; \log(1-D(G(z))) \;)
+loss_D = min(-1\cdot\;(\; \log(D(x))\; +\; \log(1-D(G(z))) \;) \;)
 
 \\[10pt]
 
@@ -254,7 +254,7 @@ $$
 The discrimantor tries to minimize the wrong predictions.
 
 $$
-\underset{\text{D}}{min} -(\; \log(D(G(z))) \;)
+loss_G = min(-1\cdot\;(\; \log(D(G(z))) \;) \;)
 
 \\[10pt]
 
@@ -270,7 +270,7 @@ The generator tries to fool the discriminator.
 Let's now see the Wasserstein loss function in comparison.
 
 $$
-\underset{\text{D}}{min} -(\; D(x)\; -\; D(G(z)) \;)
+loss_D = min(-1\cdot\;(\; D(x)\; -\; D(G(z)) \;) \;)
 
 \\[10pt]
 
@@ -285,7 +285,7 @@ $$
 The discriminator with the wasserstein loss tries to maximize the difference between the predictions of the real and fakes, which is converted to a minimization task.
 
 $$
-\underset{\text{G}}{min} -(\; D(G(z)) \;)
+loss_G = min(-1\cdot\;(\; D(G(z)) \;)\;)
 
 \\[10pt]
 
