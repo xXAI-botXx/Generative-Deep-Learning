@@ -10,6 +10,7 @@ Contents:
     - [Basics of Deep Learning](#basics-of-deep-learning)
     - [Variational Autoencoder (VAE)](#variational-autoencoder-vae)
     - [Generative Adversarial Networks (GANs)](#generative-adversarial-networks-gans)
+    - [Autoregressive Models](#autoregressive-models)
     - [Installation](#installation)
     - [Hardware Check](#hardware-check)
     - [Code](#code)
@@ -199,7 +200,7 @@ The decoder learns to reconstruct the original input from a sample drawn from th
 ---
 ### Generative Adversarial Networks (GANs)
 
-The idea behind GANs is simple. One part generates data from noise and the other part tries to tell, if the data is from the generator or from the real/original data distribution, called the discriminator. Both try now to improve. The generator tries to generator images, so that the discriminator does think it is from the real data and so uses the feedback of the discriminator. This is the reason why GANs only implicit learn the density function. There is no direct representation of the data/density function. It just tries to get not spotted from the discriminator and so learn the data distribution implicitly, without even knowing or seeing it. <br>
+The idea behind GANs is simple. One part generates data from noise and the other part tries to tell, if the data is from the generator or from the real/original data distribution, called the discriminator or the critic. Both try now to improve. The generator tries to generator images, so that the discriminator does think it is from the real data and so uses the feedback of the discriminator. This is the reason why GANs only implicit learn the density function. There is no direct representation of the data/density function. It just tries to get not spotted from the discriminator and so learn the data distribution implicitly, without even knowing or seeing it. <br>
 In comparison the VAE directly used the data distribution to learned an encoding and a decoding to build an explicit approximate probability distribution. A GAN only learnes a density function implicitly.<br>
 Back to the GAN: The improvement of the discriminator is also straightforward due to the fact, that we know if we gave him a fake (from the generator) or a real data from the data. So the discriminator learnes to classify if data is from the original data or not -> it will predict in percentage (how likely is the data from the original data). <br>
 It is a continuing process of improving. At the beginning the generator will only generates random noise and the discriminator will decide randomly but may adjust and learn that noisy images come from the generator, and so the generator get bad results and gets pushed to improve/change the generation process until it successfull fool the discriminator most of the times and so the discriminator adjust and this game continues.<br>
@@ -232,6 +233,98 @@ Through the fact that the generator and the discrimantor challenge each other, t
 
 GANs have many parameters like (where and how many) batch normalization layers, dropout layers, activation layers, convolutional layers, important the filters amount of the convolutional layers, size of the latent-space, learning rate, learning rate scheduler, epochs and optimizer.<br>
 Trial and error is the way. The knowledge of how a GAN works and how to interpret the losses and the example images can be helpful through this process.
+
+**WGAN-GP**<br>
+The Wasserstein GAN - Gradient Penalty is another GAN implementation which is more stable as the DCGAN. It uses the Wasserstein loss function, which does not output in probability but in a score $(-\inf, \inf)$. The before used binary cross-entropy loss can be written as folowing:
+$$
+\underset{\text{D}}{min} -(\; \log(D(x))\; +\; \log(1-D(G(z))) \;)
+
+\\[10pt]
+
+\begin{array}{l}
+    \bullet \: \text{where } D \text{ is the discriminator function.} \\
+    \bullet \: \text{where } G \text{ is the generator function.} \\
+    \bullet \: \text{where } x \text{ is a real image}\\
+    \bullet \: \text{where } z \text{ is noise / point in the latent space}\\
+\end{array}
+$$
+The discrimantor tries to minimize the wrong predictions.
+
+$$
+\underset{\text{D}}{min} -(\; \log(D(G(z))) \;)
+
+\\[10pt]
+
+\begin{array}{l}
+    \bullet \: \text{where } D \text{ is the discriminator function.} \\
+    \bullet \: \text{where } G \text{ is the generator function.} \\
+    \bullet \: \text{where } z \text{ is noise / point in the latent space}\\
+\end{array}
+$$
+The generator tries to fool the discriminator.
+
+Let's now see the Wasserstein loss function in comparison.
+
+$$
+\underset{\text{D}}{min} -(\; D(x)\; -\; D(G(z)) \;)
+
+\\[10pt]
+
+\begin{array}{l}
+    \bullet \: \text{where } D \text{ is the discriminator function.} \\
+    \bullet \: \text{where } G \text{ is the generator function.} \\
+    \bullet \: \text{where } x \text{ is a real image}\\
+    \bullet \: \text{where } z \text{ is noise / point in the latent space}\\
+\end{array}
+$$
+
+The discriminator with the wasserstein loss tries to maximize the difference between the predictions of the real and fakes, which is converted to a minimization task.
+
+$$
+\underset{\text{G}}{min} -(\; D(G(z)) \;)
+
+\\[10pt]
+
+\begin{array}{l}
+    \bullet \: \text{where } D \text{ is the discriminator function.} \\
+    \bullet \: \text{where } G \text{ is the generator function.} \\
+    \bullet \: \text{where } z \text{ is noise / point in the latent space}\\
+\end{array}
+$$
+
+The generator still tries to fool the discriminator and tries to get real labels for his fakes. Also converted to a minimization task. Notice that the log is removed which would make it probabilistic.
+
+This continues losses are now bad, because we always want to keep the losses small, so that we can handle them well and smoothly and so the WGAN need a Lipschitz constraint. The discriminator have tomake sure that the difference of predictions of 2 images divided through the differences of the 2 images is smaller or equal 1:
+
+$$
+\frac{ | D(x_1) - D(x_2) | }{| x_1 - x_2 |}
+$$
+
+This is where the Gradient Penalty Loss come into the scene. The gradient penalty is the squared difference between the norm/length of the gradient of the predictions with respect to the input images and 1 (which are implemented as the interpolation of fake and real image). So the gradients tend towards a length/norm to 1, else the big number space $(-\inf, \inf)$ could lead to exploding gradients and to vanishing gradients.
+
+**CGAN**<br>
+Conditional GANs are another type of GANs which have the motivation to influence/control the output with an additional input. For example we could decide via another input if we want the output is a smiling face or a not smiling/sad face. To achieve that the generator gets an one-hot encoded latent space representation of our label (smile or not smile) and the discriminator/critic gets also an additional input, the label one-hot encoded (for example in this binary example: 1,0 ; 0,1). The discriminator/critic learns now to give a score if the image is real and is the labeling with the image right. Both give one score. In that way the generator learns that if the additional random latent space label vector is for example (0,1) the loss from the critic wants a smiling face. The opposite applies for the opposite. To simply adding these inputs, the label embedding gets added to the latent space vector and the critic just adds the label as another image channel, by reapeting the one-hot encoded label until it fits to the image shape.<br>
+The labels of the generator will be given and not random drawn, else it would be unsure what the GAN got and it have to be equal to the labels of the critic. During generating the generator will be random draw a label.<br>
+The CGAN can build on top of the WGAN-GP, the DCGAN or any other GAN implementation.
+
+
+
+> Note that GANs in general need much more training than VAEs but than can achieve much satisfaction.
+
+
+> You can give your GAN always additionally the label as input. This can improve the learning, but the sampling must be adjusted a bit.
+
+
+
+
+
+
+---
+### Autoregressive Models
+
+...
+
+
 
 
 
