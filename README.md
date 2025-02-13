@@ -186,6 +186,7 @@ $$
 
 The problem here is that this equation haven't a derivation due to the randomness (which is need to compute the gradient).<br>
 So we use the reparametrization trick to sample from the founded distribution, so that we get a number from the learned input distribution. This is important because the trick allows us to build the derivation of the function which is important to calculate the gradient in backpropagation. The trick just takes the standard normal distribution and transform the output to the learned/latent-space distribution.
+
 $$
 z = \mu + e^{0.5 \cdot \log(var)}*\epsilon, \quad \epsilon \sim \mathcal{N(0, 1)} 
 $$
@@ -236,6 +237,7 @@ Trial and error is the way. The knowledge of how a GAN works and how to interpre
 
 **WGAN-GP**<br>
 The Wasserstein GAN - Gradient Penalty is another GAN implementation which is more stable as the DCGAN. It uses the Wasserstein loss function, which does not output in probability but in a score $(-\inf, \inf)$. The before used binary cross-entropy loss can be written as folowing:
+
 $$
 \underset{\text{D}}{min} -(\; \log(D(x))\; +\; \log(1-D(G(z))) \;)
 
@@ -248,6 +250,7 @@ $$
     \bullet \: \text{where } z \text{ is noise / point in the latent space}\\
 \end{array}
 $$
+
 The discrimantor tries to minimize the wrong predictions.
 
 $$
@@ -261,6 +264,7 @@ $$
     \bullet \: \text{where } z \text{ is noise / point in the latent space}\\
 \end{array}
 $$
+
 The generator tries to fool the discriminator.
 
 Let's now see the Wasserstein loss function in comparison.
@@ -379,33 +383,33 @@ To **check your hardware** type following in your python cell:
 
 ```python
 def get_hardware_info(use_in_notebook=True, install_packages=True):
-    import platform
-    system_name = platform.system()
+    import sys
+    import subprocess
+    import importlib.util
     
     if install_packages:
-        if system_name.lower() == "windows":
-            %pip install psutil    # or: conda install psutil
-            %pip install gputil
-            %pip install py-cpuinfo
-        elif system_name.lower() == "linux":
-            !pip install psutil    # or: conda install psutil
-            !pip install gputil
-            !pip install py-cpuinfo
+        if importlib.util.find_spec("psutil") is None:
+            subprocess.run([sys.executable, "-m", "pip", "install", "psutil"], check=True)
+        if importlib.util.find_spec("gputil") is None:
+            subprocess.run([sys.executable, "-m", "pip", "install", "gputil"], check=True)
+        if importlib.util.find_spec("py-cpuinfo") is None:
+            subprocess.run([sys.executable, "-m", "pip", "install", "py-cpuinfo"], check=True)
 
     # import needed packages
+    import platform
     import psutil
     import GPUtil
     from cpuinfo import get_cpu_info
 
     if use_in_notebook:
-        if install_packages:
-            if system_name.lower() == "windows":
-                %pip install ipython
-            elif system_name.lower() == "linux":
-                !pip install ipython
+        if install_packages and importlib.util.find_spec("ipython") is None:
+            subprocess.run([sys.executable, "-m", "pip", "install", "ipython"], check=True)
 
         from IPython.display import clear_output
         clear_output()
+    else:
+        pass
+        # os.system('cls' if os.name == 'nt' else 'clear')
 
     print("-"*32, "\nYour Hardware:\n")
 
