@@ -2,10 +2,10 @@
 
 import cv2
 
-
 def imshow(img, title=None, image_width=10, axis=False,
-           color_space="RGB", cols=1, use_original_sytle=False,
-           hspace=0.2, wspace=0.2, invert=False):
+           color_space="RGB", cols=1, save_to=None,
+           hspace=0.2, wspace=0.2,
+           use_original_sytle=False, invert=False):
     """
     Visualizes one or multiple images.
 
@@ -13,7 +13,7 @@ def imshow(img, title=None, image_width=10, axis=False,
 
     title can be None, str or a list of strings.
     """
-    # import cv2
+    import cv2
 
     original_style = plt.rcParams.copy()
 
@@ -96,11 +96,16 @@ def imshow(img, title=None, image_width=10, axis=False,
         if axis == False:
             cur_ax.axis("off")
 
+    if save_to:
+        os.makedirs(os.path.split(save_to)[0], exist_ok=True)
+        fig.savefig(save_to, dpi=300)
+
     plt.show()
 
     if not use_original_sytle:
         # reset to original plt style
         plt.rcParams.update(original_style)
+
 
 
 

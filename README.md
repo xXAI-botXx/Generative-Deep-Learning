@@ -204,8 +204,34 @@ In comparison the VAE directly used the data distribution to learned an encoding
 Back to the GAN: The improvement of the discriminator is also straightforward due to the fact, that we know if we gave him a fake (from the generator) or a real data from the data. So the discriminator learnes to classify if data is from the original data or not -> it will predict in percentage (how likely is the data from the original data). <br>
 It is a continuing process of improving. At the beginning the generator will only generates random noise and the discriminator will decide randomly but may adjust and learn that noisy images come from the generator, and so the generator get bad results and gets pushed to improve/change the generation process until it successfull fool the discriminator most of the times and so the discriminator adjust and this game continues.<br>
 The first GAN is the DCGAN => Deep Convolutional GAN. <br>
-Interestingly the generator does the same as the decoder from VAE. It learns to decode from a latent space. In the case of the GAN, we have a latent space and draw randomly from it. We does not learn to build the latent space, which shows again that the GAN is an implicit approach. 
+Interestingly the generator does the same as the decoder from VAE. It learns to decode from a latent space. In the case of the GAN, we have a latent space and draw randomly from it. We does not learn to build the latent space, which shows again that the GAN is an implicit approach. <br>
+<br>
+Itcan always happen that the generator or the discriminator learned so good that it is overpowered and the trainings process can't continue, due the counterpart can't adjust anymore and the loss collapses.<br>
+If the discriminator takes over and predicts to well:
+- Increase the Droput rate to dampen the information flow
+- reduce the learning rate of the discrimantor
+- reduce the amount of filters in the discriminator
+- add more noise to the labels of the discriminator
+- random flipping of some labels (to confuse the discriminator)
 
+How to find out that the discriminator overpowered the generator?<br>
+-> The generated images look not good but different from each other. (The generator stopped adjusting/learning to generate well representive images, because the discriminator stopped challenging him -> too good in classifying and the generator is overwhelmed, does not know how to adjust.)
+
+
+If the generator overtakes and generates to good images so that the discrimantor can't adjust his loss anymore following steps can help (notice that this does not mean that the images of the generator looks good but it is likely that the generator learned to create one image which is successfull in fooling the discriminator -> this image/representation called a 'mode'):
+- Increase the Droput rate to dampen the information flow
+- reduce the learning rate of the generator
+- reduce the amount of filters in the generator
+- add more noise to the labels of the generator
+- random flipping of some labels (to confuse the generator)
+
+How to find out that the generator overpowered the discriminator?<br>
+-> The generated images look very similiar to each other and are not finsihed. (The generator stopped adjusting/learning to generate well representive images, because the generator found a 'gap' in the classification of the discrimantor and the discriminator is overwhelmed, does not know how to adjust.)
+
+Through the fact that the generator and the discrimantor challenge each other, the losses are expect to not be high and go lower and lower, as by many other deep learning models. The losses are expect to change over time due to the fact that the losses depend on the other losses and if one loss will go lower, the other loss will increase but then adjust and maybe the losses change to the opposite.
+
+GANs have many parameters like (where and how many) batch normalization layers, dropout layers, activation layers, convolutional layers, important the filters amount of the convolutional layers, size of the latent-space, learning rate, learning rate scheduler, epochs and optimizer.<br>
+Trial and error is the way. The knowledge of how a GAN works and how to interpret the losses and the example images can be helpful through this process.
 
 
 

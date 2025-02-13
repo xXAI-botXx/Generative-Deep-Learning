@@ -3,7 +3,6 @@
 import platform
 import os
 import shutil
-from kaggle.api.kaggle_api_extended import KaggleApi
 import zipfile
 
 def load_kaggle_dataset(author_name, dataset_name, on_google_colab, 
@@ -55,6 +54,7 @@ def load_kaggle_dataset(author_name, dataset_name, on_google_colab,
     print(f"Cpopied to: {kaggle_goal_path}")
 
     # init Kaggle API
+    from kaggle.api.kaggle_api_extended import KaggleApi
     print("Autheticating at Kaggle API...")
     api = KaggleApi()
     api.authenticate()
