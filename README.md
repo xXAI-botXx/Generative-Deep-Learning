@@ -159,15 +159,11 @@ The VAE encodes the input now into a mean and a variance of each dimension (for 
 Sampling happens now through the mean value (of the latent space) + $\exp{log_var*0.5}$ (where log_var is the log of variance in the latent space variantion) multiplied with a random sampling/number from a standard normal distribution: 
 $$
 mean + e^{(\log(var) * 0.5)} * \epsilon \sim \mathcal{N}(0,1)
-
-\\[10pt]
-
-\begin{array}{l}
-    \bullet \: \text{where } X \text{ is a random variable.} \\
-    \bullet \: \text{where } mean \text{ is the mean point of the distribution.} \\
-    \bullet \: \text{where } var \text{ is the variance of the distribution points.}\\
-\end{array}
 $$
+Definitions:
+- where $X$ is a random variable.
+- where $mean$ is the mean point of the distribution.
+- where $var$ is the variance of the distribution points.
 
 This is given through the derivation of the normal distribution. This is called 'reparameterization trick' and allows us to simply sample from a standard normal distribution and then apply this sample to the latent space normal distribution. <br>
 The VAE also uses an additional loss (to the reconstruction loss from standard autoencoder), the Kullback-Leibler divergence term, to make sure that the learned distribution for the input item is similiar to the standard normal distribution. Else the reparameterization trick would not be possible. So the encoder learns over time to create similiar distributions to the standard normal distribution. Therefore the KL divergence measures the similarity of 2 probability distributions. The KL divergence loss gets additionally weighted with a hyperparameter, so that the balance between the 2 losses can be controlled.<br>
@@ -236,34 +232,26 @@ GANs have many parameters like (where and how many) batch normalization layers, 
 Trial and error is the way. The knowledge of how a GAN works and how to interpret the losses and the example images can be helpful through this process.
 
 **WGAN-GP**<br>
-The Wasserstein GAN - Gradient Penalty is another GAN implementation which is more stable as the DCGAN. It uses the Wasserstein loss function, which does not output in probability but in a score $(-\inf, \inf)$. The before used binary cross-entropy loss can be written as folowing:
+The Wasserstein GAN - Gradient Penalty is another GAN implementation which is more stable as the DCGAN. It uses the Wasserstein loss function, which does not output in probability but in a score $(-\infty, \infty)$. The before used binary cross-entropy loss can be written as folowing:
 
 $$
-loss_D = min(-1\cdot\;(\; \log(D(x))\; +\; \log(1-D(G(z))) \;) \;)
-
-\\[10pt]
-
-\begin{array}{l}
-    \bullet \: \text{where } D \text{ is the discriminator function.} \\
-    \bullet \: \text{where } G \text{ is the generator function.} \\
-    \bullet \: \text{where } x \text{ is a real image}\\
-    \bullet \: \text{where } z \text{ is noise / point in the latent space}\\
-\end{array}
+\min_{D} - ( \log(D(x)) + \log(1-D(G(z))) )
 $$
+Definitions:
+- where $D$ is the discriminator function.
+- where $G$ is the generator function.
+- where $x$ is a real image.
+- where $z$ is noise / point in the latent space.
 
 The discrimantor tries to minimize the wrong predictions.
 
 $$
 loss_G = min(-1\cdot\;(\; \log(D(G(z))) \;) \;)
-
-\\[10pt]
-
-\begin{array}{l}
-    \bullet \: \text{where } D \text{ is the discriminator function.} \\
-    \bullet \: \text{where } G \text{ is the generator function.} \\
-    \bullet \: \text{where } z \text{ is noise / point in the latent space}\\
-\end{array}
 $$
+Definitions:
+- where $D$ is the discriminator function.
+- where $G$ is the generator function.
+- where $z$ is noise / point in the latent space.
 
 The generator tries to fool the discriminator.
 
@@ -271,30 +259,22 @@ Let's now see the Wasserstein loss function in comparison.
 
 $$
 loss_D = min(-1\cdot\;(\; D(x)\; -\; D(G(z)) \;) \;)
-
-\\[10pt]
-
-\begin{array}{l}
-    \bullet \: \text{where } D \text{ is the discriminator function.} \\
-    \bullet \: \text{where } G \text{ is the generator function.} \\
-    \bullet \: \text{where } x \text{ is a real image}\\
-    \bullet \: \text{where } z \text{ is noise / point in the latent space}\\
-\end{array}
 $$
+Definitions:
+- where $D$ is the discriminator function.
+- where $G$ is the generator function.
+- where $x$ is a real image.
+- where $z$ is noise / point in the latent space.
 
 The discriminator with the wasserstein loss tries to maximize the difference between the predictions of the real and fakes, which is converted to a minimization task.
 
 $$
 loss_G = min(-1\cdot\;(\; D(G(z)) \;)\;)
-
-\\[10pt]
-
-\begin{array}{l}
-    \bullet \: \text{where } D \text{ is the discriminator function.} \\
-    \bullet \: \text{where } G \text{ is the generator function.} \\
-    \bullet \: \text{where } z \text{ is noise / point in the latent space}\\
-\end{array}
 $$
+Definitions:
+- where $D$ is the discriminator function.
+- where $G$ is the generator function.
+- where $z$ is noise / point in the latent space.
 
 The generator still tries to fool the discriminator and tries to get real labels for his fakes. Also converted to a minimization task. Notice that the log is removed which would make it probabilistic.
 
@@ -304,7 +284,7 @@ $$
 \frac{ | D(x_1) - D(x_2) | }{| x_1 - x_2 |}
 $$
 
-This is where the Gradient Penalty Loss come into the scene. The gradient penalty is the squared difference between the norm/length of the gradient of the predictions with respect to the input images and 1 (which are implemented as the interpolation of fake and real image). So the gradients tend towards a length/norm to 1, else the big number space $(-\inf, \inf)$ could lead to exploding gradients and to vanishing gradients.
+This is where the Gradient Penalty Loss come into the scene. The gradient penalty is the squared difference between the norm/length of the gradient of the predictions with respect to the input images and 1 (which are implemented as the interpolation of fake and real image). So the gradients tend towards a length/norm to 1, else the big number space $(-\infty, \infty)$ could lead to exploding gradients and to vanishing gradients.
 
 **CGAN**<br>
 Conditional GANs are another type of GANs which have the motivation to influence/control the output with an additional input. For example we could decide via another input if we want the output is a smiling face or a not smiling/sad face. To achieve that the generator gets an one-hot encoded latent space representation of our label (smile or not smile) and the discriminator/critic gets also an additional input, the label one-hot encoded (for example in this binary example: 1,0 ; 0,1). The discriminator/critic learns now to give a score if the image is real and is the labeling with the image right. Both give one score. In that way the generator learns that if the additional random latent space label vector is for example (0,1) the loss from the critic wants a smiling face. The opposite applies for the opposite. To simply adding these inputs, the label embedding gets added to the latent space vector and the critic just adds the label as another image channel, by reapeting the one-hot encoded label until it fits to the image shape.<br>
