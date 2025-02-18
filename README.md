@@ -316,6 +316,13 @@ A recurrent layer (used by LSTMs) predicts a 'hidden state' which is just the pr
 A LSTM now uses recurrent cells along side of different improvements, like forget gates (to decide which input is important and which not). The whole process is a bit complex and can be visited here: https://en.wikipedia.org/wiki/Long_short-term_memory <br>
 By processing text, the text is needed to convert to numbers and then one-hot encoded or tranformed into an embedded representation.
 
+**PixelCNN**<br>
+PixelCNN is an autoregression model to generate images. It is autregressive meaning it uses the predecesor pixels to predict the next pixel.<br>
+Important to use convolutional layers to extract features for the prediction of the next pixel is that the convolutional network is only allowed to see the previous pixels and with that comes an ordering of the pixel, we have to define. For example we can tell the PixelCNN that our sequence is an image starting from the pixel in the top left corner and ending with the pixel in the bottom right corner, going row by row. For that the PixelCNN uses the *masked CNN*. Meaning the filters of pixel values after the current pixel gets multiplied by zero, to make sure that here is no information passed. There are 2 types of masked CNNs. Type A also hides/masks the current center pixel and type B does not hide/mask the center pixel. The types are used to first don't look at the current pixel, then predicting the current pixel and then adding the current pixel inside of the convolutional calculations to improve the prediction. <br>
+The masked CNNs get used in *residual blocks*, which adds the input and the output of the current masked CNN together and sends to the next layer/unit. This is also called *skip connection*.<br>
+There is also a version which works with distributions instead of the softmax with the direct pixel values, which reduces the amount of parameters to learn and makes the learning process much easier (**Mixture Distributions PixelCNN**). The idea is that we have multiple subdistributions (for example 3 normal distributions) and one categorical distribution to choose a subdistribution which is then used this distribution to sample.<br> 
+The biggest downside to auto regressive models is the slow process of generating an image (inference). Because we have to make as much predictions as the image is big.
+
 
 
 
