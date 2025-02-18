@@ -306,7 +306,15 @@ The CGAN can build on top of the WGAN-GP, the DCGAN or any other GAN implementat
 ---
 ### Autoregressive Models
 
-...
+Autoregression models see the input as sequential and predict element by element and involve the previous predictions/sequence in this process.<br>
+For text LSTM is one of the most famous members and PixelCNN for image prediction. Another member and probably most famous is the transform, but the transform will get an extra chapter here.<br>
+Autoregressive methods tries to learn the density function explicitly.
+
+**Long Short-Term Memory Network** (LSTM)<br>
+LSTMs are special types of recurrent neural entworks (RNNs) - which are neural entworks which makes their output part of their own next input- for text generation.<br>
+A recurrent layer (used by LSTMs) predicts a 'hidden state' which is just the predicted sequence as vector. The same unit takes one sequence element by another and additionally takes it's own last hidden state vector as input to update the current hidden state and this continues until there is no input left and the last hidden state is then the output of the recurrent layer.<br>
+A LSTM now uses recurrent cells along side of different improvements, like forget gates (to decide which input is important and which not). The whole process is a bit complex and can be visited here: https://en.wikipedia.org/wiki/Long_short-term_memory <br>
+By processing text, the text is needed to convert to numbers and then one-hot encoded or tranformed into an embedded representation.
 
 
 

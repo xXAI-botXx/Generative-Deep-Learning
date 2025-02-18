@@ -9,6 +9,15 @@ def load_kaggle_dataset(author_name, dataset_name, on_google_colab,
                         download_path, goal_path,
                         kaggle_local_path="./", kaggle_file_name="kaggle.json"):
     """
+    Loads a dataset from Kaggle. 
+    Need a Kaggle API Key.
+
+    Getting a Kaggle API Key:
+    1. Go to https://www.kaggle.com/ and create or sign in your account
+    2. Click on your profile picture > Settings and go to API
+    3. Click on 'Create New Token' and the 'kaggle.json' fie should download automatically
+    4. Now you can use this method to load this json file and download the dataset
+    
     Example:
 
     >>> load_kaggle_dataset(
