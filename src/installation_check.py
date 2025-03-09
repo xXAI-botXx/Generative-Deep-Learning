@@ -1,18 +1,21 @@
-"""
-Hardware helper file.
 
-Use me:
+# === lib import check ===
+import numpy as np
+import cv2
+from PIL import Image
+import matplotlib.pyplot as plt
 
->>> import sys
->>> sys.path += ["./src/helper"]
->>> from hardware import get_hardware_info
->>> get_hardware_info(use_in_notebook=True, install_packages=True)
+import tensorflow as tf
+from tensorflow.keras import models, layers
 
-Or copy my code to colab 🥳🚀
-"""
+import torch
+from torch.nn import Module 
 
+import mlflow
 
+# import kaggle
 
+# === hardware check ===
 def get_hardware_info(use_in_notebook=True, install_packages=True):
     import sys
     import subprocess
@@ -104,9 +107,5 @@ def get_hardware_info(use_in_notebook=True, install_packages=True):
 
 
 
-# testing
-if __name__ == '__main__':
-    get_hardware_info(use_in_notebook=True, install_packages=True)
-
-
+get_hardware_info(use_in_notebook=False, install_packages=False)
 

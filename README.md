@@ -336,16 +336,34 @@ You can install a python environment as decribed as following:
 1. Install Anaconda
 2. Manual Env creation: -> in anaconda promt
    ```terminal
-    conda create python=3.11 -n gen -c conda-forge -c nvidia
+    conda create -n gen python=3.11.11 -y
     conda activate gen
-    pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124 
-    pip3 install tensorflow tensorboard 
-    pip3 install mlflow  
+
+    pip3 install psutil
+    pip3 install gputil
+    pip3 install py-cpuinfo
+
+    pip3 install numpy
+    pip3 install matplotlib
+    pip3 install pillow
+    pip3 install opencv-python
+
+    pip3 install torch --index-url https://download.pytorch.org/whl/cu124
+    pip3 install torchvision
+    pip3 install torchaudio
+
+    pip3 install tensorboard
+    pip3 install mlflow
+    pip3 install kaggle
    ```
 3. OR Direct env installation: -> in anaconda promt + **cd** to project folder
    ```
    conda env create -f "./win_env.yml"
    ```
+
+> You can also copy (STRG+a, STRG+c) the content of the [torch env text file](./env_creation_torch_commands.txt) or [tesorflow env text file](./env_creation_tf_commands.txt) in the anaconda prompt -> with right click.
+
+
 
 **Alternativly** you can use online coding workstation, like [Google Colab](https://colab.research.google.com/).
 There are most likely important libraries already installed, but if not, you always can install them by yourself:
@@ -423,6 +441,29 @@ def get_hardware_info(use_in_notebook=True, install_packages=True):
         print("VRAM Total:", gpu.memoryTotal, "MB")
         print("VRAM Used:", gpu.memoryUsed, "MB")
         print("Utilization:", gpu.load * 100, "%")
+    try:
+        import torch
+        gpus = [torch.cuda.get_device_name(device_nr) for device_nr in range(torch.cuda.device_count())]
+        torch_support = False
+        if torch.cuda.is_available():
+            torch_support = True 
+            gpu_str = f"({','.join(gpus)})"
+        gpu_addition = f" {gpu_str}" if torch_support else ""
+        print(f"PyTorch Support: {torch_support}" + gpu_addition)
+    except Exception:
+        print(f"PyTorch Support: False")
+    
+    try:
+        import tensorflow as tf
+        gpus = tf.config.list_physical_devices('GPU')
+        tf_support = False
+        if len(gpus) > 0:
+            tf_support = True 
+            gpu_str = f"({','.join(gpus)})"
+        gpu_addition = f" {gpu_str}" if tf_support else ""
+        print(f"TensorFlow Support: {tf_support}" + gpu_addition)
+    except Exception:
+        print(f"TensorFlow Support: False")
 
     # CPU-Information
     print("\n    ---> CPU <---")
@@ -432,6 +473,7 @@ def get_hardware_info(use_in_notebook=True, install_packages=True):
     print("Logical CPU-Kernels:", psutil.cpu_count(logical=True))
     print("CPU-Frequence:", psutil.cpu_freq().max, "MHz")
     print("CPU-Utilization:", psutil.cpu_percent(interval=1), "%")
+    
 
     # RAM-Information
     print("\n    ---> RAM <---")
@@ -469,10 +511,24 @@ subprocess.run(["nvcc", "--version"])
 **TensorFlow Basics**
 - [MLP with CIFAR10 dataset](./src/01_tensorflow_basics/MLP_CIFAR10.ipynb)
 - [CNN with CIFAR10 dataset](./src/01_tensorflow_basics/CNN_CIFAR10.ipynb)
-
+conda env export 
 
 **Variational Autoencoder**
-- []()
+- [Autoencoder Fashion-MNIST TensorFlow](./src/02_variational_autoencoders/Autoencoder_Fashion_MNIST_TensorFlow.ipynb)
+- [Variational-Autoencoder Fashion-MNIST TensorFlow](./src/02_variational_autoencoders/Variational_Autoencoder_Fashion_MNIST_TensorFlow.ipynb)
+- [Variational-Autoencoder CelebA TensorFlow](./src/02_variational_autoencoders/Variational_Autoencoder_CelebA_TensorFlow.ipynb)
+
+**Generative Adversarial Networks**
+- [DCGAN TensorFlow](./src/03_generative_adversarial_networks/DCGAN_TensorFlow.ipynb)
+- [WGAN-GP TensorFlow](./src/03_generative_adversarial_networks/WGAN-GP_TensorFlow.ipynb)
+- [CGAN TensorFlow](./src/03_generative_adversarial_networks/CGAN_TensorFlow.ipynb)
+
+**Autoregressive Models**
+- [LSTM TensorFlow](./src/04_autoregressive_models/LSTM_TensorFlow.ipynb)
+- [PixelCNN TensorFlow](./src/04_autoregressive_models/PixelCNN_TensorFlow.ipynb)
+- [MD-PixelCNN TensorFlow](./src/04_autoregressive_models/MD_PixelCNN_TensorFlow.ipynb)
+
+
 
 
 

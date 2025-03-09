@@ -1,0 +1,20 @@
+conda create -n gen python=3.11.11 -y
+conda activate gen
+
+pip3 install psutil
+pip3 install gputil
+pip3 install py-cpuinfo
+
+pip3 install numpy
+pip3 install matplotlib
+pip3 install pillow
+pip3 install opencv-python
+
+pip3 install torch --index-url https://download.pytorch.org/whl/cu124
+pip3 install torchvision
+pip3 install torchaudio
+
+pip3 install tensorboard
+pip3 install mlflow
+pip3 install kaggle
+
